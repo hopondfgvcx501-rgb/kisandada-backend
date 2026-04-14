@@ -79,16 +79,22 @@ app.post('/api/disease/scan', async (req, res) => {
 });
 
 // ==========================================
-// 4. Weather Data Endpoint (WeatherAPI)
+// 4. REAL WEATHER API (Auto GPS)
 // ==========================================
 app.get('/api/weather', async (req, res) => {
   try {
     const apiKey = process.env.WEATHER_API_KEY;
-    const city = "Ranchi"; // Default location
+    
+    // NAYA LOGIC: Yahan hum phone se aane wali location pakdenge
+    const lat = req.query.lat; 
+    const lon = req.query.lon; 
+    
+    // Agar phone ne GPS location di hai, toh wo use hogi, warna "Ranchi"
+    const locationQuery = (lat && lon) ? `${lat},${lon}` : "Ranchi"; 
     
     if(!apiKey) throw new Error("Missing Weather API Key");
 
-    const response = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=3`);
+    const response = await axios.get(`http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${locationQuery}&days=3`);
     const data = response.data;
 
     res.json({
